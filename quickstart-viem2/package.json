@@ -1,0 +1,11 @@
+{
+  "name": "hardhat-project",
+  "devDependencies": {
+    "@nomicfoundation/hardhat-toolbox-viem": "^3.0.0",
+    "hardhat": "^2.22.10"
+  },
+  "dependencies": {
+    "@oasisprotocol/sapphire-viem-v2": "^2.0.0-next.1",
+    "viem": "^2.21.6"
+  }
+}
