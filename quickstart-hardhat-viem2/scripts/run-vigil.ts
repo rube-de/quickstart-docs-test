@@ -4,13 +4,28 @@ import hre from "hardhat";
 
 import { sapphireLocalnet, sapphireHttpTransport, wrapWalletClient } from '@oasisprotocol/sapphire-viem-v2';
 import { createWalletClient, toBytes, toHex, hexToBytes, parseEther, bytesToString } from "viem";
-import { mnemonicToAccount } from 'viem/accounts';
+import { mnemonicToAccount, privateKeyToAccount } from 'viem/accounts';
+import { sapphire, sapphireTestnet } from 'viem/chains';
 
 async function main() {
   const transport = sapphireHttpTransport();
-  const chain = sapphireLocalnet;
+  let account;
+  let chain;
+  switch (hre.network.name) {
+    case 'sapphire':
+      chain = sapphire;
+      account = privateKeyToAccount(process.env.PRIVATE_KEY as Address);
+      break;
+    case 'sapphire-testnet':
+      chain = sapphireTestnet;
+      account = privateKeyToAccount(process.env.PRIVATE_KEY as Address);
+      break;
+    default:
+      chain = sapphireLocalnet;
+      account = mnemonicToAccount('test test test test test test test test test test test junk');
+      break;
+  }
   const publicClient = await hre.viem.getPublicClient({chain, transport});
-  const account = mnemonicToAccount('test test test test test test test test test test test junk');
   const walletClient = await wrapWalletClient(createWalletClient({
       account, chain, transport
   }));
