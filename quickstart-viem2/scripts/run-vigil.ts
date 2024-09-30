@@ -6,11 +6,9 @@ import { privateKeyToAccount } from "viem/accounts";
 import { abi, bytecode} from "../artifacts/contracts/Vigil.sol/Vigil.json"
 
 
-
-
 async function main() {
   const transport = sapphireHttpTransport();
-	const chain = sapphireTestnet;
+	const chain = sapphireLocalnet;
 	const publicClient = createPublicClient({ chain, transport });
   
   const account = privateKeyToAccount(process.env.PRIVATE_KEY as Address);
@@ -31,15 +29,16 @@ async function main() {
 	const deployTxReceipt = await publicClient.waitForTransactionReceipt({
 		hash: deployTxHash,
 	});
-  console.log('Vigil deployed to:', deployTxReceipt.address);
+  console.log('Vigil deployed to:', deployTxReceipt.contractAddress);
 
 
 	const vigil = getContract({
-		address: deployTxReceipt.contractAddress,
+		address: deployTxReceipt.contractAddress!,
 		abi: abi,
 		client: { public: publicClient, wallet: walletClient },
 	});
 
+  console.log(vigil);
   const tx = await vigil.write.createSecret([
     'ingredient',
     30 /* seconds */,
@@ -59,6 +58,7 @@ async function main() {
   }
 
   console.log('Waiting...');
+  console.log(chain);
   // Manually generate some transactions to increment local Docker
   // container block
   if (await chain.name == 'sapphire_localnet') {
